@@ -62,6 +62,17 @@ impl<'a, 'pipe> DockerBuilder<'a, 'pipe> {
                 .arg("--env")
                 .arg(format!("DISPLAY={display_env_variable}"));
 
+            let xsock = {
+                let display_n = &display_env_variable[1..];
+                format!("/tmp/.X11-unix/X{}", display_n)
+            };
+
+            let xauth = "/home/alepez/.Xauthority";
+
+            command.arg("-v").arg(xsock);
+            command.arg("-v").arg(xauth);
+            command.arg("-e").arg(format!("XAUTHORITY={}", xauth));
+
             daemon_command = "RUST_LOG=trace wine64 win-daemon.exe".to_owned();
         }
 
