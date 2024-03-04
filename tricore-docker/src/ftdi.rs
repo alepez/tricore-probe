@@ -45,7 +45,10 @@ fn handle_client(input: &File, output: &File) {
     }
     let mut state = LocalState::new();
     let mut handle_counter = 1;
+
+    log::trace!("Starting client loop");
     while let Ok(request) = ciborium::de::from_reader(input) {
+        log::trace!("Received request {:?}", request);
         let request: RPCRequest = request;
         let response = match request {
             RPCRequest::Close(Close { handle }) => {
@@ -84,6 +87,7 @@ fn handle_client(input: &File, output: &File) {
                 }
             }
             RPCRequest::Read(read) => {
+                log::debug!("RPCRequest Read");
                 let current_handle = state.devices.get(&read.handle).unwrap();
                 let mut data = Vec::<u8>::with_capacity(read.max_data_len as usize);
                 let mut counter = read.max_data_len;
@@ -112,6 +116,7 @@ fn handle_client(input: &File, output: &File) {
                 }
             }
             RPCRequest::Write(mut input) => {
+                log::debug!("RPCRequest Write");
                 let current_handle = state.devices.get(&input.handle).unwrap();
                 let address = input.data.as_slice().as_ptr();
                 assert_eq!(address, &mut input.data.as_mut_slice()[0] as *const u8);
@@ -237,8 +242,10 @@ fn handle_client(input: &File, output: &File) {
                 }
             }
             RPCRequest::Open(r) => {
+                log::trace!("Opening device {:?}", r.number);
                 let mut handle: FT_HANDLE = core::ptr::null_mut();
                 let result = unsafe { native::FT_Open(r.number, &mut handle) };
+                log::trace!("Opened device {:?} with handle {:?} and result {:?}", r.number, handle, result);
                 let result = CommandError::from_status(result);
                 handle_counter += 1;
                 if result.is_ok() {
