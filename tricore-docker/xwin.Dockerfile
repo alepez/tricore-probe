@@ -1,6 +1,6 @@
 # Build this docker file with the parenting folder as the build context!
 # We'll just use the official Rust image
-FROM docker.io/library/rust:1.67.0-slim-bullseye
+FROM docker.io/library/rust:1.72.0-slim-bullseye
 
 ENV KEYRINGS /usr/local/share/keyrings
 
