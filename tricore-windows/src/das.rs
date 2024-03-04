@@ -21,8 +21,20 @@ pub fn run_console() -> anyhow::Result<()> {
     }
 
     log::trace!("Starting UDAS_Console");
+    let udas_console_path = das_home.join("servers/udas/UDAS_Console.exe");
 
-    let mut udas_console = Command::new(das_home.join("servers/udas/UDAS_Console.exe"));
+    // Check if the file exists
+    if !udas_console_path.exists() {
+        bail!(
+            "UDAS_Console.exe not found at {:?}, is DAS installed?",
+            udas_console_path
+        )
+    }
+
+    log::info!("Starting {:?}", udas_console_path);
+
+    let mut udas_console = Command::new(udas_console_path);
+
     let udas_console = udas_console.stderr(Stdio::inherit()).stdout(Stdio::null());
     let mut udas_console = udas_console
         .spawn()
