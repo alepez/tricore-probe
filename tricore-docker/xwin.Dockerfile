@@ -45,7 +45,7 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*;
 
 # Retrieve the std lib for the target
-RUN rustup toolchain install --force-non-host nightly-x86_64-pc-windows-msvc
+RUN rustup toolchain install --force-non-host nightly-2023-09-20-x86_64-pc-windows-msvc
 
 RUN set -eux; \
     xwin_version="0.2.10"; \
